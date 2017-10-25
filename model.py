@@ -6,10 +6,11 @@ from sklearn.model_selection import train_test_split
 import cv2
 import numpy as np
 import sklearn
+from random import shuffle
 
 
 samples = []
-with open('./data/driving_log.csv') as csvfile:
+with open('./drive_data/driving_log.csv') as csvfile:
     reader = csv.reader(csvfile)
     for line in reader:
         samples.append(line)
@@ -38,44 +39,48 @@ def generator(samples, batch_size=32):
             yield sklearn.utils.shuffle(X_train, y_train)
 
 train_generator = generator(train_samples, batch_size=32)
+validation_generator = generator(validation_samples, batch_size=32)
 
-print(train_generator)
+ch, row, col = 3, 80, 320  # Trimmed image format
 
-def nvidia_architecture():
-    model = Sequential()
-    model.add(Lambda(lambda x: (x / 127.5) - 1, input_shape=(66,200,3)))
-    model.add(Convolution2D(24, 5, 5, subsample=(2, 2), border_mode="valid", init="he_normal"))
-    
-    model.add(ELU())
-    model.add(Convolution2D(36, 5, 5, subsample=(2, 2), border_mode="valid", init="he_normal"))
+model = Sequential()
 
-    model.add(ELU())
-    model.add(Convolution2D(48, 5, 5, subsample=(2, 2), border_mode="valid", init="he_normal"))
+# Preprocess incoming data, centered around zero with small standard deviation 
+model.add(Lambda(lambda x: x/127.5 - 1.,input_shape=(ch, row, col), output_shape=(ch, row, col)))
 
-    model.add(ELU())
-    model.add(Convolution2D(64, 3, 3, subsample=(1, 1), border_mode="valid", init="he_normal"))
+model.add(Convolution2D(24, 5, 5, subsample=(2, 2), border_mode="valid", init="he_normal"))
 
-    model.add(ELU())
-    model.add(Convolution2D(64, 3, 3, subsample=(1, 1), border_mode="valid", init="he_normal"))
+model.add(ELU())
+model.add(Convolution2D(36, 5, 5, subsample=(2, 2), border_mode="valid", init="he_normal"))
 
-    model.add(ELU())
-    model.add(Flatten())
-    model.add(Dense(1164,init="he_normal"))
+model.add(ELU())
+model.add(Convolution2D(48, 5, 5, subsample=(2, 2), border_mode="valid", init="he_normal"))
 
-    model.add(ELU())
-    model.add(Dense(100,init="he_normal"))
+model.add(ELU())
+model.add(Convolution2D(64, 3, 3, subsample=(1, 1), border_mode="valid", init="he_normal"))
 
-    model.add(ELU())
-    model.add(Dense(50,init="he_normal"))
+model.add(ELU())
+model.add(Convolution2D(64, 3, 3, subsample=(1, 1), border_mode="valid", init="he_normal"))
 
-    model.add(ELU())
-    model.add(Dense(10,init="he_normal"))
+model.add(ELU())
+model.add(Flatten())
+model.add(Dense(1164,init="he_normal"))
 
-    model.add(ELU())
-    model.add(Dense(1,init="he_normal"))
+model.add(ELU())
+model.add(Dense(100,init="he_normal"))
 
+model.add(ELU())
+model.add(Dense(50,init="he_normal"))
 
-    return model
+model.add(ELU())
+model.add(Dense(10,init="he_normal"))
+
+model.add(ELU())
+model.add(Dense(1,init="he_normal"))
+
+model.compile(loss='mse', optimizer='adam')
+history = model.fit_generator(train_generator, samples_per_epoch= len(train_samples), validation_data=validation_generator, nb_val_samples=len(validation_samples), nb_epoch=3)
+print(history)
 
     
 
