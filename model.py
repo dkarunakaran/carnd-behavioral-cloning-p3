@@ -19,6 +19,10 @@ def get_csv():
 
     return samples
 
+def data_augmentation():
+
+    return None
+
 def generator(samples, batch_size=32):
     num_samples = len(samples)
     while 1: # Loop forever so the generator never terminates
@@ -46,7 +50,7 @@ def get_model():
 
     # Preprocess incoming data, centered around zero with small standard deviation 
     model.add(Lambda(lambda x: x/255.0 - 0.5,input_shape=input_shape, output_shape=input_shape))
-
+    model.add(Cropping2D(cropping=((50,20), (0,0)), input_shape=input_shape))
     model.add(Convolution2D(24, 5, 5, subsample=(2, 2), border_mode="valid", init="glorot_uniform"))
 
     model.add(ELU())
