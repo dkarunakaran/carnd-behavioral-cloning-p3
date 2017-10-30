@@ -1,21 +1,25 @@
 from keras.models import Sequential, Model 
 from keras.layers import Lambda, Cropping2D, Convolution2D, ELU, Flatten, Dense, SpatialDropout2D, Dropout
+from keras.optimizers import Adam
+from keras.preprocessing.image import ImageDataGenerator
+from random import shuffle
+import sklearn
+from sklearn.model_selection import train_test_split
 import os
 import csv
-from sklearn.model_selection import train_test_split
 import cv2
 import numpy as np
-import sklearn
-from random import shuffle
+import pandas as pd
 
 INPUT_SHAPE = (160, 320, 3)
 BATCH_SIZE = 64
-EPOCH = 40
+EPOCH = 2
 PATH_TO_IMG = 'drive_data/IMG/'
 PATH_TO_CSV = 'drive_data/driving_log.csv'
-CORRECTION = 0.2
+CORRECTION = 0.25
 
 def get_csv():
+    '''
     samples = []
     with open(PATH_TO_CSV) as csvfile:
         reader = csv.reader(csvfile)
@@ -23,104 +27,102 @@ def get_csv():
             samples.append(line)
 
     return samples
-
-def random_select_image(batch_sample):
     '''
+    df = pd.read_csv(PATH_TO_CSV, index_col=False)
+    df.columns = ['center', 'left', 'right', 'steer', 'throttle', 'brake', 'speed']
+    df = df.sample(n=len(df))
+
+    return df
+
+def random_select_image(data, i):
+    
     random = np.random.randint(4)
     if random == 0:
-        name = PATH_TO_IMG+batch_sample[1].split('/')[-1]
-        image = cv2.imread(name)
-        angle = float(batch_sample[4])+CORRECTION
-    elif random == 1 or random == 3:
-        name = PATH_TO_IMG+batch_sample[0].split('/')[-1]
-        image = cv2.imread(name)
-        angle = float(batch_sample[3])
+        path = PATH_TO_IMG+data['left'][i].split('/')[-1]
+        image = cv2.imread(path)
+        angle = float(data['steer'][i])+CORRECTION
+    elif random == 2:
+        path = PATH_TO_IMG+data['right'][i].split('/')[-1]
+        image = cv2.imread(path)
+        angle = float(data['steer'][i])-CORRECTION
     else:
-        name = PATH_TO_IMG+batch_sample[2].split('/')[-1]
-        image = cv2.imread(name)
-        angle = float(batch_sample[5])-CORRECTION
-
-    '''
-    name = PATH_TO_IMG+batch_sample[0].split('/')[-1]
-    image = cv2.imread(name)
-    angle = float(batch_sample[3])
-
+        path = PATH_TO_IMG+data['center'][i].split('/')[-1]
+        image = cv2.imread(path)
+        angle = float(data['steer'][i])
+    
     return image, angle
 
-def generator(samples, batch_size=32):
-    num_samples = len(samples)
-    while 1: # Loop forever so the generator never terminates
-        shuffle(samples)
-        for offset in range(0, num_samples, batch_size):
-            batch_samples = samples[offset:offset+batch_size]
-            images = np.empty([batch_size, INPUT_SHAPE[0],INPUT_SHAPE[1], INPUT_SHAPE[2]])
-            angles = np.empty([batch_size, 1])
-            count = 0
-            for i, batch_sample in enumerate(batch_samples):
-                result = random_select_image(batch_sample)
-                #image_flipped = np.fliplr(image)
-                #measurement_flipped = -measurement
-                images[i] = result[0]
-                angles[i] = result[1]
+def get_training(data):
+    images = []
+    angles = []
+    for i in data.index:
+        result = random_select_image(data, i)
+        random = np.random.randint(3)
+        if random == 0:
+            image_flipped = np.fliplr(result[0])
+            measurement_flipped = -result[1]
+            images.append(image_flipped)
+            angles.append(measurement_flipped)
+        else:
+            images.append(result[0])
+            angles.append(result[1])
 
-            X_train = np.array(images)
-            y_train = np.array(angles)
-            yield sklearn.utils.shuffle(X_train, y_train)
+    X_train = np.array(images)
+    y_train = np.array(angles)
+
+    return X_train, y_train
+
+def get_validation(data):
+    images = []
+    angles = []
+    for i in data.index:
+        path = PATH_TO_IMG+data['center'][i].split('/')[-1]
+        image = cv2.imread(path)
+        angle = float(data['steer'][i])
+        images.append(image)
+        angles.append(angle)
+
+    X_valid = np.array(images)
+    y_valid = np.array(angles)
+    
+    return X_valid, y_valid
 
 def get_model():
+
     model = Sequential()
-
-    # Preprocess incoming data, centered around zero with small standard deviation 
-    model.add(Lambda(lambda x: x/255.0 - 0.5,input_shape=INPUT_SHAPE, output_shape=INPUT_SHAPE))
-    #model.add(Cropping2D(cropping=((50,20), (0,0)), input_shape=INPUT_SHAPE))
-    model.add(Convolution2D(24, 5, 5, subsample=(2, 2), border_mode="valid"))
-    model.add(ELU())
-    model.add(SpatialDropout2D(0.2))
     
-    model.add(Convolution2D(36, 5, 5, subsample=(2, 2), border_mode="valid"))
-    model.add(ELU())
-    model.add(SpatialDropout2D(0.2))
-
-    model.add(Convolution2D(48, 5, 5, subsample=(2, 2), border_mode="valid"))
-    model.add(ELU())
-    model.add(SpatialDropout2D(0.2))
-
-    model.add(Convolution2D(64, 3, 3, subsample=(1, 1), border_mode="valid"))
-    model.add(ELU())
-    model.add(SpatialDropout2D(0.2))
-
-    model.add(Convolution2D(64, 3, 3, subsample=(1, 1), border_mode="valid"))
-    model.add(ELU())
-    model.add(SpatialDropout2D(0.2))
-
+    model.add(Lambda(lambda x: x/255.-0.5,input_shape=INPUT_SHAPE))
+    model.add(Cropping2D(cropping=((70, 25), (0, 0))))
+    model.add(Convolution2D(24, 5, 5, border_mode="same", subsample=(2,2), activation="elu"))
+    model.add(Convolution2D(36, 5, 5, border_mode="same", subsample=(2,2), activation="elu"))
+    model.add(Convolution2D(48, 5, 5, border_mode="valid", subsample=(2,2), activation="elu"))
+    model.add(Convolution2D(64, 3, 3, border_mode="valid", activation="elu"))
+    model.add(Convolution2D(64, 3, 3, border_mode="valid", activation="elu"))
     model.add(Flatten())
     model.add(Dropout(0.5))
-
-    model.add(Dense(100))
-    model.add(ELU())
-
-    model.add(Dense(50))
-    model.add(ELU())
-
-    model.add(Dense(10))
-    model.add(ELU())
-
+    model.add(Dense(100, activation="elu"))
+    model.add(Dense(50, activation="elu"))
+    model.add(Dense(10, activation="elu"))
     model.add(Dense(1))
-    model.add(Dropout(0.5))
+    model.compile(optimizer='adam', loss='mse')
 
     return model
 
 samples = get_csv()
-training_data, validation_data = train_test_split(samples, test_size=0.2)
 
-train_generator = generator(training_data, batch_size=BATCH_SIZE)
-validation_generator = generator(validation_data, batch_size=BATCH_SIZE)
+## Training and Validation Data
+training_count = int(0.8 * len(samples))
+training_data = samples[:training_count].reset_index()
+validation_data = samples[training_count:].reset_index()
+X_train, y_train = get_training(training_data)
+X_valid, y_valid = get_validation(validation_data)
 
+gen_train = ImageDataGenerator(height_shift_range=0.2)
+gen_valid = ImageDataGenerator()
 model = get_model()
-model.compile(loss='mse', optimizer='adam')
-samples_per_epoch = int(len(training_data) / BATCH_SIZE) * BATCH_SIZE
-history = model.fit_generator(train_generator, samples_per_epoch= samples_per_epoch, validation_data=validation_generator, nb_val_samples=len(validation_data), nb_epoch=EPOCH)
-print(history)
+samples_per_epoch_train = int(len(X_train) / BATCH_SIZE) * BATCH_SIZE
+samples_per_epoch_valid = int(len(X_valid) / BATCH_SIZE) * BATCH_SIZE
+history = model.fit_generator(gen_train.flow(X_train, y_train, batch_size=BATCH_SIZE), samples_per_epoch= samples_per_epoch_train, validation_data=gen_valid.flow(X_valid, y_valid, batch_size=BATCH_SIZE), nb_val_samples=samples_per_epoch_valid, nb_epoch=EPOCH)
 model.save('model.h5')
 
     
