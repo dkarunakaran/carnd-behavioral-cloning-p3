@@ -83,9 +83,11 @@ def random_select_image(data, i):
 
 One of the first technique is to convert BGR format to RGB
 
-BGR:<img src="HSV.png">
+BGR
+<img src="HSV.png">
 
-RGB:<img src="RGB.png">
+RGB
+<img src="RGB.png">
 
 ```
 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
