@@ -83,13 +83,14 @@ def random_select_image(data, i):
 
 One of the first technique is to convert BGR format to RGB
 
+```
+image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+```
+
 <img src="images/BGR.png">
 
 <img src="images/RGB.png">
 
-```
-image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-```
 
 The first technique is flipping the image and change the angle. i.e if an angle is positive, flipping will change the angle to negative and vice versa.
 ```
@@ -98,6 +99,12 @@ def flip_img_angle(image, angle):
     image = cv2.flip(image, 1)
     angle *= -1.0
 ```
+Actual image
+<img src="images/actual_image.png">
 
+Actual angle: -0.3012811
 
+Flipped image
+<img src="images/flipped_image.png">
 
+Flipped angle: 0.3012811
