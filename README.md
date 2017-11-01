@@ -50,7 +50,38 @@ The major differences are:
 * Model's input image dimension is (160,320,3) compared to Nvidia model input dimension. 
 * Removed one fully connected layer
 
-## Data augumentation
+## Random selection and Data augumenation
+
+I have used 3 data augumenation technique and randomly select left & right images with adjusted steering angles to train the model.
+
+### Random selection
+
+In order to avoid the overfitting, left and right images are randomly selected and adjusted their andle as if it was on the centre. During the autonomus testing, center image is only considered. This is the reason why if the left or right images are selected, then adjusting the steering angle. CORRECTION value is found out by trian and error method and best suited value for this model is .25.
+
+```
+# Randomly selecting the let, right, and center images
+def random_select_image(data, i):
+     
+    random = np.random.randint(3)
+    if random == 0:
+        path = PATH_TO_IMG+data['left'][i].split('/')[-1]
+        difference = CORRECTION
+    elif random == 1:
+        path = PATH_TO_IMG+data['center'][i].split('/')[-1]
+        difference = 0 
+    elif random == 2:
+        path = PATH_TO_IMG+data['right'][i].split('/')[-1]
+        difference = -CORRECTION
+        
+    image = cv2.imread(path)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    angle = float(data['steer'][i])+difference
+  
+    return image, angle
+```
+### Data augumenation
+
+
 
 
 
