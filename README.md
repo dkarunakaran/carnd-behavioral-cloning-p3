@@ -92,7 +92,7 @@ image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 <img src="images/RGB.png">
 
 
-The first technique is flipping the image and change the angle. i.e if an angle is positive, flipping will change the angle to negative and vice versa.
+The second technique is flipping the image and change the angle. i.e if an angle is positive, flipping will change the angle to negative and vice versa.
 ```
 # Flipping the images
 def flip_img_angle(image, angle):
