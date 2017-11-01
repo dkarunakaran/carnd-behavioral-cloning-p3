@@ -86,9 +86,10 @@ One of the first technique is to convert BGR format to RGB
 ```
 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 ```
-
+BGR:<br/>
 <img src="images/BGR.png">
 
+RGB:<br/>
 <img src="images/RGB.png">
 
 
@@ -99,12 +100,10 @@ def flip_img_angle(image, angle):
     image = cv2.flip(image, 1)
     angle *= -1.0
 ```
-Actual image<br/>
+Actual image:<br/>
 <img src="images/actual_image.png">
-
 Actual angle: -0.3012811
 
-Flipped image
+Flipped image:<br/>
 <img src="images/flipped_image.png">
-
 Flipped angle: 0.3012811
