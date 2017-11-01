@@ -99,7 +99,7 @@ def flip_img_angle(image, angle):
     image = cv2.flip(image, 1)
     angle *= -1.0
 ```
-Actual image
+Actual image<br/>
 <img src="images/actual_image.png">
 
 Actual angle: -0.3012811
