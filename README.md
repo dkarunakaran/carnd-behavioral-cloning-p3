@@ -18,7 +18,7 @@ The project has following files:
 
 I have inspired from NVIDIA architure and made some small changes to the architecture to use it for this project.
 
-<img src="cnn-architecture.png" />
+<img src="images/cnn-architecture.png" />
 
 The main model structure is given below:
 
@@ -83,9 +83,9 @@ def random_select_image(data, i):
 
 One of the first technique is to convert BGR format to RGB
 
-<img src="HSV.png">
+<img src="images/BGR.png">
 
-<img src="RGB.png">
+<img src="images/RGB.png">
 
 ```
 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
