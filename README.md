@@ -18,7 +18,33 @@ The project has following files:
 
 I have inspired from NVIDIA architure and made some small changes to the architecture to use it for this project.
 
-                    <img src="cnn-architecture.png" />
+<img src="cnn-architecture.png" />
+
+The main difference from
+
+```
+# Creating the model
+def get_model():
+    model = Sequential()
+    model.add(Lambda(lambda x: x/255.-0.5,input_shape=INPUT_SHAPE))
+    model.add(Cropping2D(cropping=((70, 25), (0, 0))))
+    model.add(Convolution2D(24, 5, 5, border_mode="same", subsample=(2,2), activation="elu"))
+    model.add(Convolution2D(36, 5, 5, border_mode="same", subsample=(2,2), activation="elu"))
+    model.add(Convolution2D(48, 5, 5, border_mode="valid", subsample=(2,2), activation="elu"))
+    model.add(Convolution2D(64, 3, 3, border_mode="valid", activation="elu"))
+    model.add(Convolution2D(64, 3, 3, border_mode="valid", activation="elu"))
+    model.add(Flatten())
+    model.add(Dropout(0.5))
+    model.add(Dense(100, activation="elu"))
+    model.add(Dense(50, activation="elu"))
+    model.add(Dense(10, activation="elu"))
+    model.add(Dense(1))
+
+    adam = Adam(lr=LEARNING_PARAMETER)
+    model.compile(optimizer=adam,loss='mse')
+
+    return model
+```
 
 
 
