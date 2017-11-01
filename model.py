@@ -19,6 +19,7 @@ INPUT_SHAPE = (160, 320, 3)
 BATCH_SIZE = 32
 EPOCH = 15
 CORRECTION = 0.25
+LEARNING_PARAMETER = 1e-4
 
 # Get data from csv
 def get_csv():
@@ -113,7 +114,7 @@ def get_model():
     model.add(Dense(10, activation="elu"))
     model.add(Dense(1))
 
-    adam = Adam(lr=1e-4)
+    adam = Adam(lr=LEARNING_PARAMETER)
     model.compile(optimizer=adam,loss='mse')
 
     return model
