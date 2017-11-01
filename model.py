@@ -1,6 +1,7 @@
 from keras.models import Sequential, Model 
 from keras.layers import Lambda, Cropping2D, Convolution2D, ELU, Flatten, Dense, Dropout
 from keras.preprocessing.image import ImageDataGenerator
+from keras.optimizers import Adam
 from random import shuffle
 import os
 import cv2
@@ -15,8 +16,8 @@ PATH_TO_CSV = 'drive_data/driving_log.csv'
 INPUT_SHAPE = (160, 320, 3)
 
 # Hyperparameteres
-BATCH_SIZE = 64
-EPOCH = 2
+BATCH_SIZE = 32
+EPOCH = 15
 CORRECTION = 0.25
 
 # Get data from csv
@@ -29,62 +30,71 @@ def get_csv():
 
 # Randomly selecting the let, right, and center images
 def random_select_image(data, i):
-    random = np.random.randint(4)
+     
+    random = np.random.randint(3)
     if random == 0:
         path = PATH_TO_IMG+data['left'][i].split('/')[-1]
-        image = cv2.imread(path)
-        angle = float(data['steer'][i])+CORRECTION
+        difference = CORRECTION
+    elif random == 1:
+        path = PATH_TO_IMG+data['center'][i].split('/')[-1]
+        difference = 0 
     elif random == 2:
         path = PATH_TO_IMG+data['right'][i].split('/')[-1]
-        image = cv2.imread(path)
-        angle = float(data['steer'][i])-CORRECTION
-    else:
-        path = PATH_TO_IMG+data['center'][i].split('/')[-1]
-        image = cv2.imread(path)
-        angle = float(data['steer'][i])
-    
+        difference = -CORRECTION
+        
+    image = cv2.imread(path)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    angle = float(data['steer'][i])+difference
+  
     return image, angle
 
-# Getting fetatures and lables from training data
-def get_training(data):
+# Getting trans images
+def trans_image(image, steer):
+    trans_range = 100
+    tr_x = trans_range * np.random.uniform() - trans_range / 2
+    steer_ang = steer + tr_x / trans_range * 2 * .2
+    tr_y = 0
+    M = np.float32([[1, 0, tr_x], [0, 1, tr_y]])
+    image_tr = cv2.warpAffine(image, M, (INPUT_SHAPE[1], INPUT_SHAPE[0]))
+    
+    return image_tr, steer_ang
+
+# Getting brightnessed image
+def brightnessed_img(image):
+    image = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+    random_bright = .25 + np.random.uniform()
+    image[:,:,2] = image[:,:,2] * random_bright
+    image = cv2.cvtColor(image, cv2.COLOR_HSV2RGB)
+    
+    return image
+
+# Flipping the images
+def flip_img_angle(image, angle):
+    image = cv2.flip(image, 1)
+    angle *= -1.0
+
+    return image, angle
+
+# Getting fetatures and lables from training and validation data
+def get_data(data):
     images = []
     angles = []
     for i in data.index:
-        result = random_select_image(data, i)
+        image, angle = random_select_image(data, i)
 
-        # Rndomly flipping the image
-        random = np.random.randint(3)
-        if random == 0:
-            image_flipped = np.fliplr(result[0])
-            measurement_flipped = -result[1]
-            images.append(image_flipped)
-            angles.append(measurement_flipped)
-        else:
-            images.append(result[0])
-            angles.append(result[1])
-
-    # Creating as numpy array
-    X_train = np.array(images)
-    y_train = np.array(angles)
-
-    return X_train, y_train
-
-# Getting fetatures and lables from validation data
-def get_validation(data):
-    images = []
-    angles = []
-    for i in data.index:
-        path = PATH_TO_IMG+data['center'][i].split('/')[-1]
-        image = cv2.imread(path)
-        angle = float(data['steer'][i])
+        # Data augumentation
+        if np.random.uniform() < 0.5:
+            image, angle = flip_img_angle(image, angle)
+        image = brightnessed_img(image)
+        image, angle = trans_image(image, angle)
         images.append(image)
         angles.append(angle)
 
     # Creating as numpy array
-    X_valid = np.array(images)
-    y_valid = np.array(angles)
-    
-    return X_valid, y_valid
+    X = np.array(images)
+    y = np.array(angles)
+
+    return X, y
 
 # Creating the model
 def get_model():
@@ -102,7 +112,9 @@ def get_model():
     model.add(Dense(50, activation="elu"))
     model.add(Dense(10, activation="elu"))
     model.add(Dense(1))
-    model.compile(optimizer='adam', loss='mse')
+
+    adam = Adam(lr=1e-4)
+    model.compile(optimizer=adam,loss='mse')
 
     return model
 
@@ -115,8 +127,8 @@ training_data = samples[:training_count].reset_index()
 validation_data = samples[training_count:].reset_index()
 
 # Getting features and labels for training and validation.
-X_train, y_train = get_training(training_data)
-X_valid, y_valid = get_validation(validation_data)
+X_train, y_train = get_data(training_data)
+X_valid, y_valid = get_data(validation_data)
 
 # Instantiating ImageDataGenerator other than yield function
 gen_train = ImageDataGenerator(height_shift_range=0.2)
