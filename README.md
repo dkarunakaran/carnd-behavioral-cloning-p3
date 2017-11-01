@@ -52,7 +52,7 @@ The major differences are:
 
 ## Random selection and Data augumenation
 
-I have used 3 data augumenation technique and randomly select left & right images with adjusted steering angles to train the model.
+I have used 4 data augumenation technique and randomly select left & right images with adjusted steering angles to train the model.
 
 ### Random selection
 
@@ -81,7 +81,21 @@ def random_select_image(data, i):
 ```
 ### Data augumenation
 
+One of the first technique is to convert HSV format to RGB
 
+HSV:
+<img src="HSV.png">
+
+RGB:
+<img src="RGB.png">
+
+The first technique is flipping the image and change the angle. i.e if an angle is positive, flipping will change the angle to negative and vice versa.
+```
+# Flipping the images
+def flip_img_angle(image, angle):
+    image = cv2.flip(image, 1)
+    angle *= -1.0
+``
 
 
 
