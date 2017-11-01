@@ -47,7 +47,7 @@ def get_model():
 ```
 
 The major differences are:
-* Model's input image dimension is (160,320,3) compared Nvidia model dimension. 
+* Model's input image dimension is (160,320,3) compared to Nvidia model dimension. 
 * Removed one fully connected layer
 
 
