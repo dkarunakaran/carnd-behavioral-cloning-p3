@@ -24,3 +24,4 @@ I have inspired from NVIDIA architure and made some small changes to the archite
 
 
 
+
