@@ -18,7 +18,7 @@ The project has following files:
 
 I have inspired from NVIDIA architure and made some small changes to the architecture to use it for this project.
 
-<img src="cnn-architecture.png"/>
+<img src="cnn-architecture.png" />
 
 
 
