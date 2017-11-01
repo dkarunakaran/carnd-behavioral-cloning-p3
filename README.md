@@ -81,13 +81,15 @@ def random_select_image(data, i):
 ```
 ### Data augumenation
 
-One of the first technique is to convert HSV format to RGB
+One of the first technique is to convert BGR format to RGB
 
-HSV:
-<img src="HSV.png">
+BGR:<img src="HSV.png">
 
-RGB:
-<img src="RGB.png">
+RGB:<img src="RGB.png">
+
+```
+image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+```
 
 The first technique is flipping the image and change the angle. i.e if an angle is positive, flipping will change the angle to negative and vice versa.
 ```
@@ -95,7 +97,7 @@ The first technique is flipping the image and change the angle. i.e if an angle 
 def flip_img_angle(image, angle):
     image = cv2.flip(image, 1)
     angle *= -1.0
-``
+```
 
 
 
