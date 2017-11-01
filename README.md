@@ -20,7 +20,7 @@ I have inspired from NVIDIA architure and made some small changes to the archite
 
 <img src="cnn-architecture.png" />
 
-The main difference from
+The main model structure is given below:
 
 ```
 # Creating the model
@@ -45,6 +45,10 @@ def get_model():
 
     return model
 ```
+
+The major differences are:
+* Model's input image dimension is (160,320,3) compared Nvidia model dimension. 
+* Removed one fully connected layer
 
 
 
