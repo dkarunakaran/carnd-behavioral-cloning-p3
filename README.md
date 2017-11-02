@@ -271,7 +271,7 @@ LEARNING_PARAMETER = .0001
 ```
 copy here
 ```
-Finally, below command used to load the trained model for the autonomous mode of the simulator and captture the frames for the video file.
+Finally, below command used to load the trained model for the autonomous mode of the simulator and capture the frames for the video file.
 
 ```
 python drive.py model.h5 video
