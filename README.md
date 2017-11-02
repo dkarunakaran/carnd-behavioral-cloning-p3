@@ -150,13 +150,21 @@ Different images with random bright:<br/>
 <img src="images/random_brightness3.png">
 <img src="images/random_brightness4.png">
 
-## Getting Data
+## Keras model in a nutshell
 
 I have done 6 round of manual driving through the simulator to collect the data. I did make sure the fact that I need to get more data to generalise the track so that I even collected the data in revese track path. Simulator saved the data to a folder with csv and image from center, left, and right cameras.
 
 I used pandas to read the csv to get the image location and steering angle.
 
 ```
+# Getting data from CSV
+samples = get_csv()
+
+# Training and Validation data
+training_count = int(0.8 * len(samples))
+training_data = samples[:training_count].reset_index()
+validation_data = samples[training_count:].reset_index()
+
 # Get data from csv
 def get_csv():
     df = pd.read_csv(PATH_TO_CSV, index_col=False)
@@ -201,6 +209,43 @@ def get_data(data):
 ```
 
 Then feed them into 'flow' method ImageDataGenerator object.
+
+```
+# Getting features and labels for training and validation.
+X_train, y_train = get_data(training_data)
+X_valid, y_valid = get_data(validation_data)
+
+```
+
+Initialize the Modified Nvidia model using get_model function.
+
+```
+# Model using Keras
+model = get_model()
+
+# Creating the model
+def get_model():
+    model = Sequential()
+    model.add(Lambda(lambda x: x/255.-0.5,input_shape=INPUT_SHAPE))
+    model.add(Cropping2D(cropping=((70, 25), (0, 0))))
+    model.add(Convolution2D(24, 5, 5, border_mode="same", subsample=(2,2), activation="elu"))
+    model.add(Convolution2D(36, 5, 5, border_mode="same", subsample=(2,2), activation="elu"))
+    model.add(Convolution2D(48, 5, 5, border_mode="valid", subsample=(2,2), activation="elu"))
+    model.add(Convolution2D(64, 3, 3, border_mode="valid", activation="elu"))
+    model.add(Convolution2D(64, 3, 3, border_mode="valid", activation="elu"))
+    model.add(Flatten())
+    model.add(Dropout(0.5))
+    model.add(Dense(100, activation="elu"))
+    model.add(Dense(50, activation="elu"))
+    model.add(Dense(10, activation="elu"))
+    model.add(Dense(1))
+
+    adam = Adam(lr=LEARNING_PARAMETER)
+    model.compile(optimizer=adam,loss='mse')
+
+    return model
+```
+
 
 The keras provided fit_generator method to feed the generator function which saves the high meory usage and save the trained model to a file usind save function.
 
