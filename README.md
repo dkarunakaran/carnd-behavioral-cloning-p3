@@ -308,7 +308,7 @@ python drive.py model.h5 video
 
 * Resizing the images
 * Train the model on second track so that car can navigate on both tracks
-* Play aroung with more data augumentation techniques to increase the accuracy
+* Play around with more data augumentation techniques to increase the accuracy
 
 
 
