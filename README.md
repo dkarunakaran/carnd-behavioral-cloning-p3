@@ -12,6 +12,8 @@ The project has following files:
 * model.h5
 * video.mp4 (a video recording of your vehicle driving autonomously around the track)
 
+## Explanation
+
 
 ### Model Architecture
 
