@@ -256,6 +256,28 @@ model.fit_generator(gen_train.flow(X_train, y_train, batch_size=BATCH_SIZE), sam
 model.save('model.h5')
 ```
 
+### Hyperparameters
+Tuning the hyperparameters are important to achieve the hight acuurate models. Here is the following hyperparameters best suited for my model. 
+
+```
+# Hyperparameteres
+BATCH_SIZE = 32
+EPOCH = 15
+LEARNING_PARAMETER = .0001
+```
+
+### Training and validation result
+
+```
+copy here
+```
+Finally, below command used to load the trained model for the autonomous mode of the simulator and captture the frames for the video file.
+
+```
+python drive.py model.h5 video
+```
+
+
 ## What more can be done?
 
 * Resizing the images
