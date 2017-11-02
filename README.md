@@ -93,7 +93,7 @@ RGB:<br/>
 <img src="images/RGB.png">
 
 
-The second technique is flipping the image and change the angle. i.e if an angle is positive, flipping will change the angle to negative and vice versa.
+The second technique is to flip the image and change the angle. i.e if an angle is positive, flipping will change the angle to negative and vice versa.
 ```
 # Flipping the images
 def flip_img_angle(image, angle):
@@ -108,4 +108,32 @@ Actual image:<br/>
 Flipped angle: 0.3012811<br/>
 Flipped image:<br/>
 <img src="images/flipped_image.png">
+
+The tird technique used to translate the image and modify the angle accordingly. Same as any data augumentation, this can help the model to generalise so that it can handle in uncertainties
+
+```
+# Getting trans images
+def trans_image(image, steer):
+    trans_range = 100
+    tr_x = trans_range * np.random.uniform() - trans_range / 2
+    steer_ang = steer + tr_x / trans_range * 2 * .2
+    tr_y = 0
+    M = np.float32([[1, 0, tr_x], [0, 1, tr_y]])
+    image_tr = cv2.warpAffine(image, M, (INPUT_SHAPE[1], INPUT_SHAPE[0]))
+    
+    return image_tr, steer_ang
+```
+
+As per the code trans range of the image is set to 100 and steering angle is modified accordingly. 
+
+
+Before image translation:<br/>
+<img src="images/before_image_translation.png">
+
+After image translation:<br/>
+<img src="images/after_image_translation.png">
+
+
+
+
 
