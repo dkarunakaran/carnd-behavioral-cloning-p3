@@ -2,8 +2,7 @@
 
 [![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
 
-Overview
----
+## Overview
 
 This is the third project of the Udacity Selfdriving Car nanodegree.The project is about to train the car to almost go around the track. I have used modified NVIDIA architecture and different data augumentation technique to train the model.
 
@@ -14,7 +13,7 @@ The project has following files:
 * video.mp4 (a video recording of your vehicle driving autonomously around the track)
 
 
-## Model Architecture
+### Model Architecture
 
 I have inspired from NVIDIA architure and made some small changes to the architecture to use it for this project.
 
@@ -50,7 +49,7 @@ The major differences are:
 * Model's input image dimension is (160,320,3) compared to Nvidia model input dimension. 
 * Removed one fully connected layer
 
-## Data augumenation
+### Data augumenation
 
 I have used 5 data augumenation technique.
 
@@ -150,7 +149,7 @@ Different images with random bright:<br/>
 <img src="images/random_brightness3.png">
 <img src="images/random_brightness4.png">
 
-## Keras model in a nutshell
+### Model training and saving to the file
 
 I have done 6 round of manual driving through the simulator to collect the data. I did make sure the fact that I need to get more data to generalise the track so that I even collected the data in revese track path. Simulator saved the data to a folder with csv and image from center, left, and right cameras.
 
@@ -255,7 +254,7 @@ model.fit_generator(gen_train.flow(X_train, y_train, batch_size=BATCH_SIZE), sam
 model.save('model.h5')
 ```
 
-
+## Reflection
 
 
 
