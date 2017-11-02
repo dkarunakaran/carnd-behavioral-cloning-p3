@@ -79,7 +79,7 @@ def random_select_image(data, i):
     return image, angle
 ```
 
-One of the first technique is to convert BGR format to RGB
+Second technique is to convert BGR format to RGB
 
 ```
 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -91,7 +91,7 @@ RGB:<br/>
 <img src="images/RGB.png">
 
 
-The second technique is to flip the image and change the angle. i.e if an angle is positive, flipping will change the angle to negative and vice versa.
+The third technique is to flip the image and change the angle. i.e if an angle is positive, flipping will change the angle to negative and vice versa.
 ```
 # Flipping the images
 def flip_img_angle(image, angle):
@@ -107,7 +107,7 @@ Flipped angle: 0.3012811<br/>
 Flipped image:<br/>
 <img src="images/flipped_image.png">
 
-The tird technique used to translate the image and modify the angle accordingly. Same as any data augumentation, this can help the model to generalise so that it can handle in uncertainties.
+The fourth technique used to translate the image and modify the angle accordingly. Same as any data augumentation, this can help the model to generalise so that it can handle in uncertainties.
 
 ```
 # Getting trans images
@@ -133,7 +133,7 @@ After image translation:<br/>
 <img src="images/after_image_translation.png">
 
 
-Third and final augumentation technique is brighnessed approach. In this, images are converted to random brightness. For this, modfied RGB image to HSV, scaled V (brightness) channel by a random number between .25 and 1.25, and converted the image back to RGB.
+Fifth and final augumentation technique is brighness augumentation approach. In this, images are converted to random brightness. For this, modfied RGB image to HSV, scaled V (brightness) channel by a random number between .25 and 1.25, and converted the image back to RGB.
 
 ```
 # Getting brightnessed image
@@ -183,8 +183,7 @@ gen_train = ImageDataGenerator(height_shift_range=0.2)
 gen_valid = ImageDataGenerator()
 ```
 
-ImageDataGenerator expect features and labels. I did the image preprocessing using custom get_data method and output of this function is 
-features and labels for traing or validation.
+ImageDataGenerator expect features and labels. I did the image preprocessing using custom get_data method and output of this function is features and labels for traing or validation.
 
 ```
 # Getting fetatures and lables from training and validation data
@@ -269,7 +268,34 @@ LEARNING_PARAMETER = .0001
 ### Training and validation result
 
 ```
-copy here
+Epoch 2/15
+12992/12992 [==============================] - 208s - loss: 0.0517 - val_loss: 0.0558
+Epoch 3/15
+12992/12992 [==============================] - 211s - loss: 0.0488 - val_loss: 0.0548
+Epoch 4/15
+12992/12992 [==============================] - 208s - loss: 0.0468 - val_loss: 0.0544
+Epoch 5/15
+12992/12992 [==============================] - 208s - loss: 0.0448 - val_loss: 0.0527
+Epoch 6/15
+12992/12992 [==============================] - 208s - loss: 0.0442 - val_loss: 0.0533
+Epoch 7/15
+12992/12992 [==============================] - 209s - loss: 0.0434 - val_loss: 0.0510
+Epoch 8/15
+12992/12992 [==============================] - 208s - loss: 0.0425 - val_loss: 0.0490
+Epoch 9/15
+12992/12992 [==============================] - 208s - loss: 0.0424 - val_loss: 0.0492
+Epoch 10/15
+12992/12992 [==============================] - 207s - loss: 0.0409 - val_loss: 0.0485
+Epoch 11/15
+12992/12992 [==============================] - 209s - loss: 0.0406 - val_loss: 0.0483
+Epoch 12/15
+12992/12992 [==============================] - 208s - loss: 0.0403 - val_loss: 0.0480
+Epoch 13/15
+12992/12992 [==============================] - 208s - loss: 0.0402 - val_loss: 0.0467
+Epoch 14/15
+12992/12992 [==============================] - 208s - loss: 0.0391 - val_loss: 0.0475
+Epoch 15/15
+12992/12992 [==============================] - 207s - loss: 0.0401 - val_loss: 0.0465
 ```
 Finally, below command used to load the trained model for the autonomous mode of the simulator and capture the frames for the video file.
 

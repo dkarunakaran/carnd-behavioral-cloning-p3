@@ -19,7 +19,7 @@ INPUT_SHAPE = (160, 320, 3)
 BATCH_SIZE = 32
 EPOCH = 15
 CORRECTION = 0.25
-LEARNING_PARAMETER = 1e-4
+LEARNING_PARAMETER = .0001 #1e-4
 
 # Get data from csv
 def get_csv():
