@@ -4,13 +4,13 @@
 
 ## Overview
 
-This is the third project of the Udacity Selfdriving Car nanodegree.The project is about to train the car to almost go around the track. I have used modified NVIDIA architecture and different data augumentation technique to train the model.
+This is the third project of the Udacity Selfdriving Car nanodegree.The project is about to train the car to almost go around the track. I have used modified NVIDIA architecture and different data augumentation techniques to train the model.
 
 The project has following files: 
 * model.py
 * drive.py
 * model.h5
-* video.mp4 (a video recording of your vehicle driving autonomously around the track)
+* video.mp4 (a video recording of the vehicle driving autonomously around the track)
 
 ## Explanation
 
@@ -47,15 +47,15 @@ def get_model():
     return model
 ```
 
-The major differences are:
+The major differences from actual architure are:
 * Model's input image dimension is (160,320,3) compared to Nvidia model input dimension. 
 * Removed one fully connected layer
 
 ### Data augumenation
 
-I have used 5 data augumenation technique.
+I have used 5 data augumenation techniques.
 
-In order to avoid the overfitting, left and right images are randomly selected and adjusted their andle as if it was on the centre. During the autonomus testing, center image is only considered. This is the reason why if the left or right images are selected, then adjusting the steering angle. CORRECTION value is found out by trian and error method and best suited value for this model is .25.
+In order to avoid the overfitting, left & right images are randomly selected and adjusted their andle as if it was on the centre. During the autonomus testing, center image is only considered. This is the reason why if the left or right images are selected, steering angle are adjusted. CORRECTION value is found out by trial and error method and best suited value for this model is .25.
 
 ```
 # Randomly selecting the let, right, and center images
@@ -107,7 +107,7 @@ Flipped angle: 0.3012811<br/>
 Flipped image:<br/>
 <img src="images/flipped_image.png">
 
-The fourth technique used to translate the image and modify the angle accordingly. Same as any data augumentation, this can help the model to generalise so that it can handle in uncertainties.
+The fourth technique used to translate the image and modify the angle accordingly. Same as any data augumentation, this can help the model to generalise so that it can handle uncertainties.
 
 ```
 # Getting trans images
@@ -153,7 +153,7 @@ Different images with random bright:<br/>
 
 ### Model training and saving to the file
 
-I have done 6 round of manual driving through the simulator to collect the data. I did make sure the fact that I need to get more data to generalise the track so that I even collected the data in revese track path. Simulator saved the data to a folder with csv and image from center, left, and right cameras.
+I have done 6 round of manual driving through the simulator to collect the data. I did make sure the fact that I need to get more data to generalise the track. I even collected the data in revese track path. Simulator saved the data to a folder with csv and image from center, left, and right cameras.
 
 I used pandas to read the csv to get the image location and steering angle.
 
@@ -175,7 +175,7 @@ def get_csv():
     return df
 ```
 
-For getting the data for training and validation, I used ImageDataGenerator provided by Keras. The object can generate batches of tensor image data with real-time data augmentation. Even though I am using ImageDataGenerator, I didnt use any built in data augumentation technique of the method.
+For getting the data for training and validation, I used ImageDataGenerator provided by Keras. The object can generate batches of tensor image data with real-time data augmentation. Even though I am using ImageDataGenerator, I didnt use any built in data augumentation technique of the function.
 
 ```
 # Instantiating ImageDataGenerator other than yield function
@@ -183,7 +183,7 @@ gen_train = ImageDataGenerator(height_shift_range=0.2)
 gen_valid = ImageDataGenerator()
 ```
 
-ImageDataGenerator expect features and labels. I did the image preprocessing using custom get_data method and output of this function is features and labels for traing or validation.
+ImageDataGenerator expect features and labels. I did the image preprocessing using custom get_data function and output of this function is features and labels for traing or validation.
 
 ```
 # Getting fetatures and lables from training and validation data
@@ -217,7 +217,7 @@ X_valid, y_valid = get_data(validation_data)
 
 ```
 
-Initialize the Modified Nvidia model using get_model function.
+Initialize the modified Nvidia model using get_model function.
 
 ```
 # Model using Keras
@@ -247,7 +247,7 @@ def get_model():
 ```
 
 
-The keras provided fit_generator method to feed the generator function which saves the high meory usage and save the trained model to a file usind save function.
+The keras provided fit_generator method to feed the generator function which saves the high memory usage and save the trained model to a file using save function.
 
 ```
 # Training the model
@@ -256,7 +256,7 @@ model.save('model.h5')
 ```
 
 ### Hyperparameters
-Tuning the hyperparameters are important to achieve the hight acuurate models. Here is the following hyperparameters best suited for my model. 
+Tuning the hyperparameters are important to achieve the highest acuurate models. Here is the following hyperparameters best suited for my model. 
 
 ```
 # Hyperparameteres
@@ -297,7 +297,7 @@ Epoch 14/15
 Epoch 15/15
 12992/12992 [==============================] - 207s - loss: 0.0401 - val_loss: 0.0465
 ```
-Finally, below command used to load the trained model for the autonomous mode of the simulator and capture the frames for the video file.
+Finally, below command used to load the trained model for the autonomous mode of the simulator and to capture the frames for the video file.
 
 ```
 python drive.py model.h5 video
@@ -306,9 +306,9 @@ python drive.py model.h5 video
 
 ## What more can be done?
 
-* Resizing the images
-* Train the model on second track so that car can navigate on both tracks
-* Play around with more data augumentation techniques to increase the accuracy
+* Resizing the images.
+* Train the model on second track so that car can navigate on both tracks.
+* Play around with more data augumentation techniques to increase the accuracy.
 
 
 
