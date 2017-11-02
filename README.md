@@ -256,7 +256,11 @@ model.fit_generator(gen_train.flow(X_train, y_train, batch_size=BATCH_SIZE), sam
 model.save('model.h5')
 ```
 
-## Reflection
+## What more can be done?
+
+* Resizing the images
+* Train the model on second track so that car can navigate on both tracks
+* Play aroung with more data augumentation techniques to increase the accuracy
 
 
 
